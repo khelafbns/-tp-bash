@@ -1,45 +1,38 @@
 #!/bin/bash
-# backup.sh - Archive un dossier (horodatée) et supprime les sauvegardes de plus de 7 jours.
+# backup.sh - Archive un dossier, horodate l'archive, supprime les sauvegardes de plus de 7 jours
 # Usage : ./backup.sh <dossier_a_sauvegarder> [dossier_destination]
 
 set -Eeuo pipefail
-
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
-}
+trap 'echo "Erreur à la ligne $LINENO, sauvegarde interrompue." >&2' ERR
 
 DOSSIER="${1:-}"
-DESTINATION="${2:-$HOME/backups}"
-RETENTION_JOURS=7
+DEST="${2:-./sauvegardes}"
 
+# Vérifications
 if [ -z "$DOSSIER" ]; then
     echo "Usage : $0 <dossier> [destination]" >&2
-    exit 2
-fi
-
-if [ ! -d "$DOSSIER" ]; then
-    echo "Erreur : le dossier '$DOSSIER' n'existe pas" >&2
     exit 1
 fi
 
-mkdir -p "$DESTINATION"
+if [ ! -d "$DOSSIER" ]; then
+    echo "Erreur : le dossier '$DOSSIER' n'existe pas." >&2
+    exit 1
+fi
 
+# Préparation
+mkdir -p "$DEST"
 HORODATAGE=$(date +%Y-%m-%d_%H-%M-%S)
 NOM=$(basename "$DOSSIER")
-ARCHIVE="$DESTINATION/backup_${NOM}_${HORODATAGE}.tar.gz"
+ARCHIVE="$DEST/${NOM}_${HORODATAGE}.tar.gz"
 
-log "Début de la sauvegarde de '$DOSSIER'"
+# Création de l'archive
 tar -czf "$ARCHIVE" -C "$(dirname "$DOSSIER")" "$NOM"
-log "Archive créée : $ARCHIVE"
+echo "Sauvegarde créée : $ARCHIVE"
 
-log "Nettoyage des sauvegardes de plus de ${RETENTION_JOURS} jours"
-shopt -s nullglob
-for fichier in "$DESTINATION"/backup_"${NOM}"_*.tar.gz; do
-    if [ -n "$(find "$fichier" -mtime +"$RETENTION_JOURS")" ]; then
-        rm -- "$fichier"
-        log "Supprimée : $fichier"
-    fi
+# Suppression des sauvegardes de plus de 7 jours
+for fichier in $(find "$DEST" -maxdepth 1 -name "${NOM}_*.tar.gz" -mtime +7); do
+    rm -f "$fichier"
+    echo "Ancienne sauvegarde supprimée : $fichier"
 done
 
-log "Sauvegarde terminée avec succès"
 exit 0
