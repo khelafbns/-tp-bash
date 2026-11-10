@@ -1,0 +1,12 @@
+2026-11-10 08:46:48 [INFO] === Début du pipeline ===
+2026-11-10 08:46:48 [INFO] Clonage de https://github.com/octocat/Hello-World.git
+2026-11-10 08:46:49 [INFO] Exécution des tests
+2026-11-10 08:46:49 [ERROR] README.md manquant
+2026-11-10 08:46:49 [ERROR] Échec des tests
+2026-11-10 08:47:10 [INFO] === Début du pipeline ===
+2026-11-10 08:47:10 [INFO] Mise à jour du dépôt (git pull)
+2026-11-10 08:47:11 [INFO] Exécution des tests
+2026-11-10 08:47:11 [ERROR] README.md manquant
+2026-11-10 08:47:11 [ERROR] Échec des tests
+2026-11-10 08:47:31 [INFO] === Début du pipeline ===
+2026-11-10 08:47:31 [INFO] Clonage de https://github.com/nimportequoi/inexistant.git
